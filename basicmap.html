@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Basic Leaflet map</title>
+	
+	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" 
+	 integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" 
+	 crossorigin=""/>
+	 
+	 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+	 integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+     crossorigin=""></script>
+	 
+	<style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+        }
+		.legend {
+            width: 250px;
+            font-size: 14px;
+            color: #333333;
+            font-family: "Open Sans", Helvetica, sans-serif;
+            padding: 10px 14px;
+            background-color: rgba(245,245,220,0.8) ;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            border: 1px solid grey;
+        }
+        .legend img {
+            width: 150px;
+            margin: auto;
+            display: block;
+        }
+    </style>
+	
+    
+</head>
+<body>
+    
+	<div id="map"></div>
+	
+	<script>
+        
+		// Create variable to hold map element, give initial settings to map
+	var map = L.map("map", {center: [29.755726, -95.463150], zoom: 16});
+	
+	// Add OpenStreetMap tile layer to map element
+	L.tileLayer(
+		"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
+		{attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}
+	).addTo(map);
+	
+	// Add point
+	let pnt = L.circle([29.761403, -95.463344], {radius: 25, color: "black", fillColor: "blue"}).addTo(map);
+	
+	// Add line
+	let line = L.polyline(
+		[[29.761403, -95.463344], [29.750248, -95.462961], [29.750297, -95.461252]], 
+		{color: "red", weight: 5}
+	).addTo(map);
+	
+	// Add polygon
+	let pol = L.polygon(
+	  [
+		[29.756874, -95.467475], 
+		[29.754452, -95.467393], 
+		[29.754595, -95.463185], 
+		[29.757009, -95.463267]
+	  ], 
+	  {color: "black", fillColor: "blue", weight: 2}
+	).addTo(map);
+	
+	// Add popup on the line layer
+	line.bindPopup(
+		"Example of a <b>popup</b>" + "<br>" + 
+		" added to a <b>line layer</b>."
+	);
+	
+	// Create Leaflet Control Object for Legend
+	let legend = L.control({position: "bottomleft"});
+	
+	// Function that runs when legend is added to map
+	legend.onAdd = function() {
+
+		// Create Div Element and Populate it with HTML
+		let div = L.DomUtil.create("div", "legend");
+		div.innerHTML = 
+			'<p><b>Simple shapes in Leaflet</b></p><hr>' +
+			'<p>This map shows an example of adding shapes on a Leaflet map</p>' +
+			'The following shapes were added:<br>' +
+			'<p><ul>' +
+			'<li>A marker</li>' +
+			'<li>A line</li>' +
+			'<li>A polygon</li>' +
+			'</ul></p>' +
+			'The line layer has a <b>popup</b>. Click on the line to see it!<hr>' +
+			'Click anywhere to get coordinates!<hr>' +
+			'Created with the Leaflet library<br>' +
+			'<img src="images/orcalogo2.png">';
+
+		// Return the Legend div containing the HTML content
+		return div;
+
+	};
+
+	// Add Legend to Map
+	legend.addTo(map);
+	
+	// Create an empty popup
+	let popup = L.popup();
+
+	// Function to set popup contents
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent(
+				"You clicked the map at -<br>" + 
+				"<b>lon:</b> " + e.latlng.lng + "<br>" + 
+				"<b>lat:</b> " + e.latlng.lat
+			)
+			.openOn(map);
+	}
+
+	// Add event listener for click events on the map
+	map.addEventListener("click", onMapClick);
+		
+		 /*L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+		attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+	}).addTo(map);*/
+		
+    </script>
+	
+	
+	
+	
+	
+</body>
+</html>

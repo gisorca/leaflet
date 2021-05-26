@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Multiplicando</title>
+<script src="jquery.js"></script>
+</head>
+
+<body>
+
+		<p>Primer Numero 
+            <input type="number" id="num1" min="0" max="100" value="5">
+        </p>
+        <p>Segundo Numero 
+            <input type="number" id="num2" min="0" max="100" value="5">
+        </p>
+        <input type="button" id="multiply" value="Multiplicar!">
+		
+		<input type="button" id="divide" value="Dividir!">
+		
+		<input type="button" id="clear" value="Clear History">
+		
+		<p id="result">aqui va la cosa</p>
+		
+		<script>
+            
+			$("#multiply").on("click", function(){
+						
+			$("#result").text("La respuesta es: " + $("#num1").val() * $("#num2").val());
+			
+			});
+			
+        </script>
+		
+		<script>
+            
+			$("#divide").on("click", function(){
+			
+			$("#result").text("La respuesta es: " + $("#num1").val() / $("#num2").val());
+			
+			});
+			
+        </script>
+		
+		<script>
+            
+			$("#clear").on("click", function(){
+			
+			$("#result").text("");
+			
+			});
+			
+        </script>
+		
+		
+
+
+</body>
+
+
+
+
+
+<html>
