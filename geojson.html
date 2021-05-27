@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My GeoJSON Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" 
+	 integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" 
+	 crossorigin=""/>
+	 
+	 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+	 integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+     crossorigin=""></script>
+	 
+	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	 
+    <style>
+        #map { 
+		width: 60%;
+		height: 100%;
+		float: left;
+	}
+	#text {
+		height: 100%;
+		width: 40%;
+		float: right;
+	}
+	#geojsontext {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 20px;
+		width: 90%;
+		height: 80%;
+	}
+	#submit {
+		margin: 20px;
+	}
+	html, body {
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+	
+	<div id="text">
+    <textarea id="geojsontext">	
+	{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"party": "Republican"},
+      "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+              [[-104.05, 48.99], [-97.22,  48.98], 
+              [-96.58,  45.94], [-104.03, 45.94], 
+              [-104.05, 48.99]]
+          ]
+      }
+    }, 
+    {
+      "type": "Feature",
+      "properties": {"party": "Democrat"},
+      "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+              [[-109.05, 41.00], [-102.06, 40.99], 
+              [-102.03, 36.99], [-109.04, 36.99], 
+              [-109.05, 41.00]]
+          ]
+      }
+    }
+  ]
+}	
+	</textarea>
+    <input type="button" id="submit" value="Submit">
+	<p>Click submit button to upload predefined geojson text</p>
+	</div>
+	
+    <script>
+
+// Create variable to hold map element, give initial settings to map
+//let map = L.map("map", {center: [29.755726, -95.463150], zoom: 4});
+
+var map = L.map("map").setView([43, -105], 4);
+
+// Add OpenStreetMap tile layer to map element
+L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
+    {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}
+).addTo(map);
+
+/* var states = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"party": "Republican"},
+      "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+              [[-104.05, 48.99], [-97.22,  48.98], 
+              [-96.58,  45.94], [-104.03, 45.94], 
+              [-104.05, 48.99]]
+          ]
+      }
+    }, 
+    {
+      "type": "Feature",
+      "properties": {"party": "Democrat"},
+      "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+              [[-109.05, 41.00], [-102.06, 40.99], 
+              [-102.03, 36.99], [-109.04, 36.99], 
+              [-109.05, 41.00]]
+          ]
+      }
+    }
+  ]
+}
+
+
+L.geoJSON(states).addTo(map);
+
+*/
+
+// Add Layer Group
+var layers = L.layerGroup().addTo(map);
+
+// press submit to display layer from geoJSON
+function showGeojson() {
+	layers.clearLayers(); // Remove old geoJSON
+    var txt = $("#geojsontext").val();
+    txt = JSON.parse(txt);
+    L.geoJSON(txt).addTo(layers);  //Display new geoJSON
+}
+$("#submit").on("click", showGeojson);
+
+
+
+    </script>
+</body>
+</html>
