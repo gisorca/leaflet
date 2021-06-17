@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dropdown Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" 
+	 integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" 
+	 crossorigin=""/>
+	 
+	 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+	 integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+     crossorigin=""></script>
+	 
+	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+        }
+		#units_sel {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background-color: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+    
+let map = L.map("map").setView([28.8822, -97.845654], 11);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+// Set layer group
+let unitsLayer = L.layerGroup().addTo(map);
+// Set URL
+let url = "https://gisorca.carto.com/api/v2/sql?";
+let urlJSON = url + "q=";
+let urlGeoJSON = url + "format=GeoJSON&q="
+let sqlQuery1 = "SELECT name, operator, the_geom FROM karnesunits";
+let sqlQuery2 = "SELECT DISTINCT operator FROM karnesunits ORDER BY operator";
+
+// Add empty dropdown menu
+let dropdown = L.control({position: "topleft"});
+dropdown.onAdd = function() {
+    let div = L.DomUtil.create("div", "dropdown");
+    div.innerHTML = '<select id="units_sel"></select>';
+    return div;
+};
+dropdown.addTo(map);
+
+/*
+// Load points of individual species
+fetch(urlGeoJSON + sqlQuery1)
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+	
+        L.geoJSON(data).addTo(unitsLayer);
+    });
+*/
+
+// Load species list
+fetch(urlJSON + sqlQuery2)
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        let html = "";		
+		html += "<option>" + "ALL" + "</option>";
+        data.rows.forEach(function(element) {			
+            html += "<option>" + element.operator + "</option>";
+        });
+        document.getElementById("units_sel").innerHTML = html;
+		displayUnits();
+    });
+	
+	
+// Function to reload and display species observations	
+function displayUnits(){
+		let valueSelected = document.getElementById("units_sel").value;
+		let sqlQuery4 = "SELECT operator, the_geom FROM karnesunits";
+        let sqlQuery3 = "SELECT operator, the_geom FROM karnesunits WHERE operator = '" + valueSelected + "'";
+		if (valueSelected == "ALL"){
+			fetch(urlGeoJSON + sqlQuery4)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                unitsLayer.clearLayers();
+                L.geoJSON(data).addTo(unitsLayer);
+            });
+		
+		} else {
+        fetch(urlGeoJSON + sqlQuery3)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                unitsLayer.clearLayers();
+                L.geoJSON(data).addTo(unitsLayer);
+            });
+		}
+}	
+
+// Reload points on selection change
+document
+    .getElementById("units_sel")
+    .addEventListener("change", displayUnits);
+	
+
+/*
+// Reload points on selection change
+document
+    .getElementById("units_sel")
+    .addEventListener("change", function() {
+        let valueSelected = document.getElementById("units_sel").value;
+        let sqlQuery3 = "SELECT operator, the_geom FROM karnesunits WHERE operator = '" + valueSelected + "'";
+        fetch(urlGeoJSON + sqlQuery3)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                unitsLayer.clearLayers();
+                L.geoJSON(data).addTo(unitsLayer);
+            });
+    });
+*/
+/*
+// load GeoJSON from CARTO database
+fetch(url + sqlQuery)
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        L.geoJSON(data, {
+            onEachFeature: function(feature, layer) {
+                layer.bindPopup(feature.properties.operator + "<br>" + feature.properties.name);
+            }
+        }).addTo(map);
+    }); 
+*/
+    </script>
+</body>
+</html>
+
